@@ -1,0 +1,190 @@
+#!/bin/bash
+
+
+# Global vars
+USAGE="vulcanctl [-h | --help] <command> [<args>]"
+GIT_DIR="./TEST"
+
+# GP functions
+die() {
+        # Quits with exit code and print message if provided
+        local status=$1
+        local message=$2
+        [[ "$message" ]] && echo "$message"
+        exit $status
+}
+
+confirm() {
+        # Confirms dangerous stuff
+        local prompt="$1"
+
+        # call with a prompt string or use a default
+        read -p "${prompt} [N/y]: " -r        
+        case "$REPLY" in
+                [yY][eE][sS]|[yY]) 
+                        true
+                        ;;
+                *)
+                        die 0 "Cancelled."
+                        ;;
+        esac
+}
+
+assert_repo_exists() {
+        local path="$GIT_DIR/${1}.git"
+        [ ! -d "$path" ] && die 1 "No such repository: $path"
+}
+
+assert_repo_no_exists() {
+        local path="$GIT_DIR/${1}.git"
+        [ -d "$path" ] && die 1 "Repository exists: $path"
+}
+
+# Repo functions
+repo_list() {
+        # Pretty prints a list of stored repositories 
+        # FIXME do the pretty part
+        ls $GIT_DIR
+}
+
+repo_init() {
+        # Handles repo subcommand init
+        local repo="$1"
+        assert_repo_no_exists "$repo"
+        local path="$GIT_DIR/${repo}.git"
+        
+        mkdir "$path"
+        cd "$path"
+        git init --bare
+}
+
+repo_rm() {
+        # Handles repo subcommand rm
+        local repo="$1"
+        assert_repo_exists "$repo"
+        local path="$GIT_DIR/${repo}.git"
+
+        confirm "Really delete repository ${repo}? This CANNOT be undone." && \
+        confirm "The repository ${repo} will be gone FOREVER. Is this OK?" && \
+        rm -rf "$path"
+}
+
+
+repo_open() {
+        # Opens a repo 
+        # FIXME check repo already open
+        local repo="$1"
+        assert_repo_exists "$repo"
+        local path="$GIT_DIR/${repo}.git"
+
+        confirm "Really open ${repo}? The repository will be visible on gitweb and readable without authentication." && \
+        confirm "Again, the repository will be readable to the outside world WITHOUT any authentication. Is this OK?" && \
+        touch "$path/git-daemon-export-ok"
+}
+
+repo_close() {
+        # Closes a repo 
+        # FIXME check repo already closed
+        local repo="$1"
+        assert_repo_exists "$repo"
+        local path="$GIT_DIR/${repo}.git"
+
+        confirm "Really close ${repo}?" && \
+        rm "$path/git-daemon-export-ok"
+}
+
+repo() {
+        # Handles "repo" subcommand
+        local repo_usage="vulcanctl repo [-h | --help] [-l | --list] [-i | --init <repository>] [--rm <repository>] [-o | --open <repository>] [-c | --close <repository>]"
+
+        # TODO rename, edit description file. turn CRUD operations into subcommands? restructure to <repo> [option1, opt2...]? what's nice about this is you can issue multiple commands at once over ssh
+
+        [ $# -eq 0 ] && echo $repo_usage && exit
+
+        while [ $# -gt 0 ]; do
+                case "$1" in
+                        --help|-h)
+                                echo $repo_usage
+                                exit
+                                ;;
+
+                        --list|-l)
+                                repo_list
+                                exit
+                                ;;
+
+                        --init|-i)
+                                repo_init "$2"
+                                shift 2
+                                ;;
+
+                        --rm)
+                                repo_rm "$2"
+                                shift 2
+                                ;;
+
+                        --open|-o)
+                                repo_open "$2"
+                                shift 2
+                                ;;
+
+                        --close|-c)
+                                repo_close "$2"
+                                shift 2
+                                ;;
+                        
+                        *)
+                                echo $repo_usage
+                                die 1 "Error: Unknown opt $1"
+                                ;;
+                esac
+        done
+}
+
+# Auth functions
+auth_add_key() {
+        echo ""
+        # echo "no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty" >> authorized_keys
+        # cat key to authorized_keys
+}
+
+auth_remove_key() {
+        echo ""
+}
+
+auth_list_keys() {
+        echo ""
+}
+
+auth() {
+        echo ""
+}
+
+# Primary parse
+# TODO long help
+
+[ $# -eq 0 ] && echo $USAGE && exit
+
+case "$1" in
+        --help|-h)
+                echo $USAGE
+                exit
+                ;;
+
+        repo)
+                shift
+                repo $@
+                exit
+                ;;
+
+        auth)
+                shift
+                auth $@
+                exit
+                ;;
+        
+        *)
+                echo $USAGE
+                die 1 "Error: Unknown subcommand $1"
+                ;;
+esac
