@@ -4,12 +4,19 @@ FROM debian:stable
 RUN apt-get update
 RUN apt-get install -y git gitweb lighttpd openssh-server
 
+# Suppress PAM's MOTD print
+RUN sed -i -e '/motd/s/^/#/' /etc/pam.d/sshd
+
 # Copy gitweb cgi to /var/www
 RUN cp -Rf /usr/share/gitweb /var/www
 
 # Copy in gitweb config files
-COPY ./config/gitweb.conf /etc
-COPY ./config/lighttpd.conf /etc/lighttpd
+COPY --chown=root --chmod=744 ./config/gitweb.conf /etc
+COPY --chown=root --chmod=700 ./config/lighttpd.conf /etc/lighttpd
+
+# Copy in ssh server config files
+COPY --chown=root --chmod=700 ./config/issue /etc
+COPY --chown=root --chmod=700 ./config/sshd_config /etc/ssh
 
 # Add git user
 RUN adduser git
@@ -17,19 +24,20 @@ RUN adduser git
 # Set shell for git user to git-shell
 RUN chsh git -s $(which git-shell)
 
-# Copy in essential git shell commands
-COPY --chown=git --chmod=755 ./config/git-shell-commands /home/git/git-shell-commands
+# Copy in git shell commands
+COPY --chown=git --chmod=755 ./config/git-shell-commands /tmp/git-shell-commands
+RUN cp -r /tmp/git-shell-commands /home/git
 
 # Setup .ssh directory
 RUN mkdir /home/git/.ssh && chmod 700 /home/git/.ssh
-RUN touch /home/git/.ssh/authorized_keys && chmod 600 /home/git/.ssh/authorized_keys
 
-# Volume mount git home and authorized_keys file
-VOLUME ["/home/git", "/home/git/.ssh/authorized_keys"]
+# Volume mount git home and authorized_keys file. Also a volume for git-shell-commands that can be mapped, but shouldn't to preserve vulcanctl
+VOLUME ["/home/git", "/home/git/.ssh/authorized_keys", "/home/git/git-shell-commands"]
 
 # Expose ssh for git and 80 for gitweb (need port for http/unauthenticated pulls?) Recommend disabling ssh on host
 EXPOSE 22
 EXPOSE 80
+EXPOSE 9418
 
 # Entrypoint
 COPY ./entrypoint.sh /
