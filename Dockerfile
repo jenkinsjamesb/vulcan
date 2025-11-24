@@ -11,12 +11,12 @@ RUN sed -i -e '/motd/s/^/#/' /etc/pam.d/sshd
 RUN cp -Rf /usr/share/gitweb /var/www
 
 # Copy in gitweb config files
-COPY --chown=root --chmod=744 ./config/gitweb.conf /etc
-COPY --chown=root --chmod=700 ./config/lighttpd.conf /etc/lighttpd
+COPY --chown=root --chmod=744 ./src/gitweb.conf /etc
+COPY --chown=root --chmod=700 ./src/lighttpd.conf /etc/lighttpd
 
 # Copy in ssh server config files
-COPY --chown=root --chmod=700 ./config/issue /etc
-COPY --chown=root --chmod=700 ./config/sshd_config /etc/ssh
+COPY --chown=root --chmod=700 ./src/issue /etc
+COPY --chown=root --chmod=700 ./src/sshd_config /etc/ssh
 
 # Add git user
 RUN adduser git
@@ -24,9 +24,12 @@ RUN adduser git
 # Set shell for git user to git-shell
 RUN chsh git -s $(which git-shell)
 
-# Copy in git shell commands
-COPY --chown=git --chmod=755 ./config/git-shell-commands /tmp/git-shell-commands
+# Copy in git shell commands and add to /home/git
+COPY --chown=git --chmod=755 ./src/git-shell-commands /tmp/git-shell-commands
 RUN cp -r /tmp/git-shell-commands /home/git
+
+# Copy in man pages for use in git shell
+COPY --chown=root --chmod=744 ./src/man /tmp/man
 
 # Setup .ssh directory
 RUN mkdir /home/git/.ssh && chmod 700 /home/git/.ssh
