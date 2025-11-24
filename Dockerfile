@@ -2,7 +2,7 @@ FROM debian:stable
 
 # Install dependencies FIXME some webserver needed for gitweb
 RUN apt-get update
-RUN apt-get install -y git gitweb lighttpd openssh-server
+RUN apt-get install -y man-db git gitweb lighttpd openssh-server
 
 # Suppress PAM's MOTD print
 RUN sed -i -e '/motd/s/^/#/' /etc/pam.d/sshd
@@ -29,7 +29,7 @@ COPY --chown=git --chmod=755 ./src/git-shell-commands /tmp/git-shell-commands
 RUN cp -r /tmp/git-shell-commands /home/git
 
 # Copy in man pages for use in git shell
-COPY --chown=root --chmod=744 ./src/man /tmp/man
+COPY --chown=root --chmod=755 ./src/man /tmp/man
 
 # Setup .ssh directory
 RUN mkdir /home/git/.ssh && chmod 700 /home/git/.ssh
