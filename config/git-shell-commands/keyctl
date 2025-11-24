@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# FIXME CRUD keys
-
-# echo "no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty" >> authorized_keys
-# cat key to authorized_keys

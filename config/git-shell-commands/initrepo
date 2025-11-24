@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# FIXME add usage, guard against overwrite, trim .git etc.
-
-mkdir ~/$1.git
-cd ~/$1.git
-git init --bare
