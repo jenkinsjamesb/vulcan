@@ -1,0 +1,46 @@
+.\" Manpage for vulcanctl-repo.
+
+.TH vulcanctl-repo 1 "2025-11-23" "1.0" "vulcanctl Manual"
+
+.SH NAME
+vulcanctl \- perform administrative tasks on the repositories stored in the Vulcan forge.
+
+.SH SYNOPSIS
+vulcanctl repo [-h | --help] [-l | --list] [-i | --init <repository>] [--rm <repository>] [-o | --open <repository>] [-c | --close <repository>]
+
+.SH DESCRIPTION
+nuseradd is high level shell program for adding users to LDAP server.  On Debian, administrators should usually use nuseradd.debian(8) instead.
+
+.SH OPTIONS
+.TP
+--help | -h
+Displays usage information and exits.
+
+.TP
+--list | -l
+Displays the available repositories and exits.
+
+.TP
+--init | -i <repository name>
+Initializes a git repository of the specified name.
+
+.TP
+--rm <repository name>
+Deletes the specified git repository. Requires confirmation.
+
+.TP
+--open | -o <repository name>
+Opens the specified repository by creating the git-daemon-export-ok file. This will allow unauthenticated pulls and display the repository in the Gitweb interface. 
+
+.TP
+--close | -c <repository name>
+Closes the specified repository by deleting the git-daemon-export-ok file. This will block unauthenticated pulls and prevent display of the repository in the Gitweb interface. 
+
+.SH SEE ALSO
+vulcanctl(1), vulcanctl-auth(1)
+
+.SH BUGS
+Ideally, this command should support easy renaming of a repository and the use of some git commands.
+
+.SH AUTHOR
+James Jenkins (jenkins.j.brad@gmail.com)

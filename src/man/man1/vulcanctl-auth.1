@@ -1,0 +1,38 @@
+.\" Manpage for vulcanctl-auth.
+
+.TH vulcanctl-auth 1 "2025-11-23" "1.0" "vulcanctl Manual"
+
+.SH NAME
+vulcanctl \- manage the public keys permitted to access the Vulcan forge.
+
+.SH SYNOPSIS
+vulcanctl auth [-h | --help] [-l | --list] [-a | --add <key>] [--rm <pattern>]"
+
+.SH DESCRIPTION
+The auth command allows the listing and addition/removal of public keys.
+
+.SH OPTIONS
+.TP
+--help | -h
+Displays usage information and exits.
+
+.TP
+--list | -l
+Displays the currently authorized keys and exits.
+
+.TP
+--add | -a <key>
+Adds a key of the form \"ssh-<cipher> <key> <optional name>\" to the authorized keys list.
+
+.TP
+--rm <pattern>
+Removes all keys matching pattern. Requires confirmation, and will not allow deletion of the key used to run the command.
+
+.SH SEE ALSO
+vulcanctl(1), vulcanctl-repo(1)
+
+.SH BUGS
+Ideally, this command should support the recovery of the last deleted keys in case a mistake is made.
+
+.SH AUTHOR
+James Jenkins (jenkins.j.brad@gmail.com)

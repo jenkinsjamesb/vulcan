@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# man
+#
+# Wrapper script to provide man access for vulcanctl in git shell
+#
+# James Jenkins 2025
+
+env MANPATH="/tmp/man" man "$@"

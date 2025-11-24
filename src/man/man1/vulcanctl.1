@@ -1,0 +1,34 @@
+.\" Manpage for vulcanctl.
+
+.TH vulcanctl 1 "2025-11-23" "1.0" "vulcanctl Manual"
+
+.SH NAME
+vulcanctl \- perform administrative tasks on a Vulcan forge.
+
+.SH SYNOPSIS
+vulcanctl [-h | --help] <command> [<args>]
+
+.SH DESCRIPTION
+vulcanctl is a utility for interacting with the Vulcan forge. It offers the ability to perform basic CRUD operations on the stored repositories and authorized SSH keys.
+
+.SH OPTIONS
+.TP
+--help | -h
+Displays usage information and exits.
+
+.TP
+repo [<args>]
+Provides options for managing Git repositories.
+
+.TP
+auth [<args>]
+Provides options for managing SSH access.
+
+.SH SEE ALSO
+vulcanctl-repo(1), vulcanctl-auth(1)
+
+.SH BUGS
+No known bugs.
+
+.SH AUTHOR
+James Jenkins (jenkins.j.brad@gmail.com)

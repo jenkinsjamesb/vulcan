@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# help
+#
+# Script to be run at git-shell login
+#
+# James Jenkins 2025
+
+GIT_DIR="/home/git"
+
+echo "Welcome to the Vulcan Git shell. Available actions:"
+ls "$GIT_DIR/git-shell-commands"
